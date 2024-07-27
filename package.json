@@ -13,5 +13,5 @@
     "build": "turbo run build",
     "lint:fix": "turbo run lint:fix"
   },
-  "packageManager": "pnpm@9.5.0"
+  "packageManager": "pnpm@9.6.0"
 }
