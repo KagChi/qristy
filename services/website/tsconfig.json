@@ -1,0 +1,29 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"jsx": "preserve",
+		"allowJs": true,
+		"noEmit": true,
+		"incremental": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		"jsxImportSource": "solid-js",
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"allowSyntheticDefaultImports": true,
+		"types": ["vinxi/client"],
+		"paths": {
+			"@/*": ["src/*"]
+		}
+	},
+	"exclude": [
+		"node_modules",
+		"node_modules/**/**.d.ts"
+	],
+	"include": [
+		"src/**/**.tsx",
+		"src/**/**.json"
+	]
+}

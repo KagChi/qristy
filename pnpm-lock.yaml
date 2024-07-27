@@ -12,7 +12,7 @@ importers:
         specifier: ^2.0.9
         version: 2.0.9
 
-  apps/website:
+  services/website:
     dependencies:
       '@solidjs/meta':
         specifier: ^0.29.4
@@ -3843,7 +3843,7 @@ snapshots:
       consola: 3.2.3
       defu: 6.1.4
       get-port-please: 3.1.2
-      h3: 1.12.0
+      h3: 1.11.1
       http-shutdown: 1.2.2
       jiti: 1.21.6
       mlly: 1.7.1
@@ -5892,7 +5892,7 @@ snapshots:
       anymatch: 3.1.3
       chokidar: 3.6.0
       destr: 2.0.3
-      h3: 1.12.0
+      h3: 1.11.1
       listhen: 1.7.2
       lru-cache: 10.4.3
       mri: 1.2.0
