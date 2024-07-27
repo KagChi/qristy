@@ -11,5 +11,3 @@ on:
 jobs:
   test:
     uses: nezuchan/workflows/.github/workflows/lint-and-compile-test.yml@main
-    with:
-      SETUP_PNPM: false
