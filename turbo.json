@@ -6,6 +6,11 @@
             "cache": true,
             "outputs": []
         },
+        "build": {
+            "persistent": true,
+            "cache": true,
+            "outputs": [".vinxi", "dist"]
+        },
         "lint:fix": {
             "persistent": true,
             "cache": true,

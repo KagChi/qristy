@@ -10,6 +10,7 @@
   },
   "scripts": {
     "lint": "turbo run lint",
+    "build": "turbo run build",
     "lint:fix": "turbo run lint:fix"
   },
   "packageManager": "pnpm@9.5.0"
