@@ -1,6 +1,11 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "tasks": {
+        "lint": {
+            "persistent": true,
+            "cache": true,
+            "outputs": []
+        },
         "lint:fix": {
             "persistent": true,
             "cache": true,

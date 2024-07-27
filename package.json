@@ -9,6 +9,7 @@
     "turbo": "^2.0.9"
   },
   "scripts": {
+    "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix"
   },
   "packageManager": "pnpm@9.5.0"
