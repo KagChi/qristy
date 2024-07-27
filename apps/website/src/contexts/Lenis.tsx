@@ -1,4 +1,4 @@
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 import { createContext, useContext } from "solid-js";
 
 export const LenisContext = createContext<Lenis>();

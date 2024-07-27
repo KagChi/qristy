@@ -1,6 +1,6 @@
 import { mount, StartClient } from "@solidjs/start/client";
 import { LenisContext } from "./contexts/Lenis";
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 
 mount(() => {
     const lenis = new Lenis();

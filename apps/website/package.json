@@ -1,0 +1,47 @@
+{
+  "name": "@kagchi/qristy-website",
+  "version": "1.0.0",
+  "description": "Open source QRIS Payment Handler for Indonesian UMKM's, Providing realtime QRIS Status.",
+  "scripts": {
+    "dev": "vinxi dev",
+    "start": "vinxi start",
+    "build": "vinxi build",
+    "lint": "eslint src --ext ts,tsx",
+    "lint:fix": "eslint src --fix --ext ts,tsx"
+  },
+  "type": "module",
+  "author": "KagChi",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@hazmi35/eslint-config": "^12.0.0",
+    "@types/aos": "^3.0.7",
+    "@types/node": "^20.14.12",
+    "@typescript-eslint/eslint-plugin": "^7.17.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-plugin-tailwindcss": "^3.17.4",
+    "postcss": "^8.4.40",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^3.4.7",
+    "typescript": "^5.5.4"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
+    "extends": [
+      "@hazmi35/eslint-config/typescript",
+      "plugin:tailwindcss/recommended"
+    ],
+    "rules": {}
+  },
+  "dependencies": {
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.14.1",
+    "@solidjs/start": "^1.0.6",
+    "aos": "^2.3.4",
+    "lenis": "^1.1.8",
+    "solid-js": "^1.8.19",
+    "vinxi": "^0.4.1"
+  }
+}
