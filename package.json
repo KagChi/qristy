@@ -1,7 +1,7 @@
 {
   "name": "@kagchi/qristy",
   "version": "1.0.0",
-  "description": "Open source QRIS Payment Handler for Indonesian UMKM's, Providing realtime QRIS Status.",
+  "description": "The open source QRIS Payment Handler for Indonesian UMKM's, Providing realtime QRIS Status.",
   "type": "module",
   "author": "KagChi",
   "license": "GPL-3.0",

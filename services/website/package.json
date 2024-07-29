@@ -1,7 +1,7 @@
 {
   "name": "@kagchi/qristy-website",
   "version": "1.0.0",
-  "description": "Open source QRIS Payment Handler for Indonesian UMKM's, Providing realtime QRIS Status.",
+  "description": "QRISty Website Page.",
   "scripts": {
     "dev": "vinxi dev",
     "start": "vinxi start",
