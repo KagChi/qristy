@@ -7,11 +7,9 @@ export default createHandler(() => <StartServer
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-            <title>NezukoChan - Home</title>
-            <meta name="title" content="NezukoChan - Home" />
-            <meta name="description" content="The Only Discord Music Bot YouU+0060ll ever need!" />
-
-            <meta name="theme-color" content="#B82065" />
+            <title>QRISTY - Payment Handler</title>
+            <meta name="title" content="QRISTY - Payment Handler" />
+            <meta name="description" content="The open source QRIS Payment Handler for Indonesian UMKM's, Providing realtime QRIS Status." />
             {assets}
         </head>
         <body>
