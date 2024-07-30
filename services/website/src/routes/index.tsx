@@ -8,7 +8,7 @@ export default function Page(): JSX.Element {
             <h1 class="text-2xl font-bold text-white md:text-4xl">Selamat Datang!</h1>
             <p class="text-sm text-white">Silakan buat pembayaran QRIS untuk produk atau jasa yang Anda jual.</p>
 
-            <div class="mt-12">
+            <div class="mt-2">
                 <button class="w-fit rounded-full bg-white px-4 py-1.5">
                     <p class="text-sm font-bold uppercase text-black md:text-base">
                         Buat Pembayaran Baru
