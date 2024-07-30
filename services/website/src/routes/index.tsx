@@ -19,7 +19,7 @@ export default function Page(): JSX.Element {
                 <div class="mt-12">
                     <p class="text-xl font-bold text-white">Aktivitas Terbaru</p>
 
-                    <div class="mt-4 grid grid-cols-1 gap-4">
+                    <div class="mt-4 grid grid-cols-1 gap-2">
                         <div class="rounded-lg bg-white p-4">
                             <p class="text-sm font-bold text-black">Invoice #123142</p>
                             <p class="text-xl text-black">Rp 100.000</p>
