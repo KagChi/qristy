@@ -6,7 +6,7 @@
   "author": "KagChi",
   "license": "GPL-3.0",
   "devDependencies": {
-    "turbo": "^2.0.9"
+    "turbo": "^2.0.10"
   },
   "scripts": {
     "lint": "turbo run lint",
