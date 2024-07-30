@@ -18,6 +18,9 @@ module.exports = {
                 serif: ["sans-serif"],
                 baloo: ["'Baloo 2', sans-serif"]
             },
+            container: {
+                center: true
+            },
             screens: {
                 sm: "640px",
 
