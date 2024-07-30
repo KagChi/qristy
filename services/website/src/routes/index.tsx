@@ -5,7 +5,7 @@ import { JSX } from "solid-js";
 export default function Page(): JSX.Element {
     return (
         <>
-            <main class="container min-h-screen max-w-2xl px-4 py-16 md:px-0">
+            <main class="container min-h-screen max-w-2xl p-4 md:px-0">
                 <h1 class="text-2xl font-bold text-white md:text-4xl">Selamat Datang!</h1>
                 <p class="text-sm text-white">Silakan buat pembayaran QRIS untuk produk atau jasa yang Anda jual.</p>
 
