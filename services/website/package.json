@@ -15,7 +15,7 @@
   "devDependencies": {
     "@hazmi35/eslint-config": "^12.0.0",
     "@types/aos": "^3.0.7",
-    "@types/node": "^20.14.12",
+    "@types/node": "^20.14.13",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
@@ -40,7 +40,7 @@
     "@solidjs/router": "^0.14.1",
     "@solidjs/start": "^1.0.6",
     "aos": "^2.3.4",
-    "lenis": "^1.1.8",
+    "lenis": "^1.1.9",
     "solid-js": "^1.8.19",
     "vinxi": "^0.4.1"
   }
