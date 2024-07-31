@@ -4,7 +4,7 @@
   "description": "QRISty Backend API.",
   "main": "dist",
   "scripts": {
-    "test": "pnpm run build && node dist/index.js",
+    "test": "pnpm run build && node -r dotenv/config dist/index.js",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "build": "rimraf dist && swc src -d dist --config-file .swcrc --strip-leading-paths"
@@ -28,12 +28,14 @@
     "@types/node": "^20.14.12",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",
+    "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.5.4"
   },
   "dependencies": {
     "@hono/node-server": "^1.12.0",
+    "got": "^14.4.2",
     "hono": "^4.5.3",
     "hono-pino-logger": "^1.0.0",
     "pino": "^9.3.2",
