@@ -14,4 +14,6 @@ app.use("*", pinoLogger(logger));
 
 app.get("/", c => c.text("Hello World"));
 
-serve({ fetch: app.fetch, port: 3001 });
+serve({ fetch: app.fetch, port: 3001 }, info => {
+    logger.info(`Server is running on port ${info.port}`);
+});
