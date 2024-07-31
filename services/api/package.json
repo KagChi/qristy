@@ -1,0 +1,35 @@
+{
+  "name": "@kagchi/qristy-api",
+  "version": "1.0.0",
+  "description": "QRISty Backend API.",
+  "main": "dist",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "build": "swc src -d dist"
+  },
+  "type": "module",
+  "author": "KagChi",
+  "license": "GPL-3.0",
+  "eslintConfig": {
+    "parserOptions": {
+      "project": "./tsconfig.eslint.json"
+    },
+    "extends": [
+      "@hazmi35/eslint-config/typescript"
+    ],
+    "rules": {}
+  },
+  "devDependencies": {
+    "@hazmi35/eslint-config": "^12.0.0",
+    "@swc/cli": "^0.4.0",
+    "@swc/core": "^1.7.2",
+    "@types/node": "^20.14.12",
+    "@typescript-eslint/eslint-plugin": "^7.17.0",
+    "@typescript-eslint/parser": "^7.17.0",
+    "eslint": "^8.57.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.4"
+  }
+}

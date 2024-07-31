@@ -1,0 +1,23 @@
+{
+    "extends": "../../tsconfig.eslint.json",
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "lib": ["ES2022"],
+        "strict": true,
+        "outDir": "dist",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "skipLibCheck": false,
+        "noEmitHelpers": true,
+        "importHelpers": true,
+        "resolveJsonModule": true,
+        "strictNullChecks": true,
+        "typeRoots": ["node_modules/@types", "src/typings"]
+    },
+    "exclude": ["node_modules"],
+    "include": ["src"],
+}
