@@ -28,8 +28,8 @@ export default function Page(): JSX.Element {
                 <div class="flex size-full items-center justify-center px-4">
                     <form class="container max-w-2xl rounded-md bg-[#161E1E]" action="">
                         <div class="flex w-full flex-col gap-4 rounded-md px-6 py-4 text-white">
-                            <div class="flex flex-col gap-2">
-                                <h1 class="text-start text-2xl font-bold md:text-3xl">Buat pembayran baru</h1>
+                            <div class="flex flex-col">
+                                <h1 class="text-start text-2xl font-bold md:text-3xl">Buat pembayaran baru</h1>
                                 <p class="text-xs font-light">Masukan jumlah pembayaran yang akan dibayar.</p>
                             </div>
 
