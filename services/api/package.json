@@ -29,15 +29,18 @@
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",
     "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.23.1",
     "eslint": "^8.57.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.5.4"
   },
   "dependencies": {
     "@hono/node-server": "^1.12.0",
+    "drizzle-orm": "^0.32.1",
     "got": "^14.4.2",
     "hono": "^4.5.3",
     "hono-pino-logger": "^1.0.0",
+    "mysql2": "^3.11.0",
     "pino": "^9.3.2",
     "pino-pretty": "^11.2.2",
     "socket.io": "^4.7.5"
