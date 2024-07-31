@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "build": "swc src -d dist"
+    "build": "rimraf dist && swc src -d dist --config-file .swcrc --strip-leading-paths"
   },
   "type": "module",
   "author": "KagChi",
