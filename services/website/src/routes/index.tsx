@@ -1,18 +1,60 @@
 // @refresh reload
 
-import { JSX } from "solid-js";
+import { IconCircleX } from "@tabler/icons-solidjs";
+import { createEffect, createSignal, JSX } from "solid-js";
 
 export default function Page(): JSX.Element {
+    const [paymentDialog, setPaymentDialog] = createSignal(false);
+
+    createEffect(() => {
+        const handleOutsideClick = (event: MouseEvent): void => {
+            const target = event.target;
+            if (paymentDialog() && target instanceof HTMLElement && !target.closest("#app > dialog > div > form")) {
+                setPaymentDialog(false);
+            }
+        };
+
+        document.addEventListener("mousedown", e => handleOutsideClick(e));
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsideClick);
+        };
+    }, [paymentDialog()]);
+
     return (
         <>
+            <dialog open={paymentDialog()} class="fixed inset-0 z-[90] size-full overflow-y-auto bg-transparent backdrop-blur-sm">
+                <IconCircleX class="absolute right-0 top-0 m-4 cursor-pointer text-white" size={32} onClick={() => setPaymentDialog(false)} />
+                <div class="flex size-full items-center justify-center px-4">
+                    <form class="container max-w-2xl rounded-md bg-[#161E1E]" action="">
+                        <div class="flex w-full flex-col gap-4 rounded-md px-6 py-4 text-white">
+                            <div class="flex flex-col gap-2">
+                                <h1 class="text-start text-2xl font-bold md:text-3xl">Buat pembayran baru</h1>
+                                <p class="text-xs font-light">Masukan jumlah pembayaran yang akan dibayar.</p>
+                            </div>
+
+                            <div class="mt-8 flex flex-col gap-2">
+                                <div class="flex w-full flex-col gap-2">
+                                    <label for="jumlah" class="font-medium">Jumlah</label>
+                                    <input name="jumlah" class="rounded-md p-3 text-black" type="text" placeholder="Rp 100,000" />
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full rounded-md bg-white px-4 py-2 font-bold text-black hover:opacity-60">
+                                Buat Pembayaran
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
             <main class="container min-h-screen max-w-2xl p-4 md:px-0">
                 <h1 class="text-2xl font-bold text-white md:text-4xl">Selamat Datang!</h1>
                 <p class="text-sm text-white">Silakan buat pembayaran QRIS untuk produk atau jasa yang Anda jual.</p>
 
                 <div class="mt-2">
-                    <button class="w-fit rounded-full bg-white px-4 py-1.5">
+                    <button onClick={(() => setPaymentDialog(!paymentDialog()))} class="w-fit rounded-full bg-white px-4 py-1.5">
                         <p class="text-sm font-bold uppercase text-black md:text-base">
-                        Buat Pembayaran Baru
+                            Buat Pembayaran Baru
                         </p>
                     </button>
 

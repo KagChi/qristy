@@ -39,6 +39,7 @@
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.14.1",
     "@solidjs/start": "^1.0.6",
+    "@tabler/icons-solidjs": "^3.11.0",
     "aos": "^2.3.4",
     "lenis": "^1.1.9",
     "solid-js": "^1.8.19",

@@ -23,6 +23,9 @@ importers:
       '@solidjs/start':
         specifier: ^1.0.6
         version: 1.0.6(rollup@4.19.1)(solid-js@1.8.19)(vinxi@0.4.1(@types/node@20.14.13)(ioredis@5.4.1)(terser@5.31.3))(vite@5.3.5(@types/node@20.14.13)(terser@5.31.3))
+      '@tabler/icons-solidjs':
+        specifier: ^3.11.0
+        version: 3.11.0(solid-js@1.8.19)
       aos:
         specifier: ^2.3.4
         version: 2.3.4
@@ -837,6 +840,14 @@ packages:
 
   '@solidjs/start@1.0.6':
     resolution: {integrity: sha512-O5knaeqDBx+nKLJRm5ZJurnXZtIYBOwOreQ10APaVtVjKIKKRC5HxJ1Kwqg7atOQNNDgsF0pzhW218KseaZ1UA==}
+
+  '@tabler/icons-solidjs@3.11.0':
+    resolution: {integrity: sha512-e0Fg9g1Qa0V8UbyF9wxWQJl9+r6sycLtxHJjQN2kPP2RfQ0GEJPTM9muzWlpoxuNpbeE5iLB3w9sfgXhoecCTQ==}
+    peerDependencies:
+      solid-js: ^1.4.7
+
+  '@tabler/icons@3.11.0':
+    resolution: {integrity: sha512-/vZinJNvCYhdAB+RUsyCpanSPuOEKHHIZi4Uu0Bw7ilewHnQhCWUPrT704uHCRli2ROl7spADPmWzAqOganA5A==}
 
   '@types/aos@3.0.7':
     resolution: {integrity: sha512-sEhyFqvKauUJZDbvAB3Pggynrq6g+2PS4XB3tmUr+mDL1gfDJnwslUC4QQ7/l8UD+LWpr3RxZVR/rHoZrLqZVg==}
@@ -3692,6 +3703,13 @@ snapshots:
       - supports-color
       - vinxi
       - vite
+
+  '@tabler/icons-solidjs@3.11.0(solid-js@1.8.19)':
+    dependencies:
+      '@tabler/icons': 3.11.0
+      solid-js: 1.8.19
+
+  '@tabler/icons@3.11.0': {}
 
   '@types/aos@3.0.7': {}
 
