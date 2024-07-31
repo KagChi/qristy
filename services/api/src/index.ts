@@ -2,8 +2,8 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { pinoLogger } from "hono-pino-logger";
 import pino from "pino";
-const app = new Hono();
 
+const app = new Hono();
 const logger = pino({
     transport: {
         target: "pino-pretty"
