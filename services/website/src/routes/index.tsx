@@ -41,8 +41,13 @@ export default function Page(): JSX.Element {
 
                             <div class="mt-8 flex flex-col gap-2">
                                 <div class="flex w-full flex-col gap-2">
-                                    <label for="jumlah" class="font-medium">Jumlah</label>
-                                    <input name="jumlah" class="rounded-md p-3 text-black" type="text" placeholder="Rp 100,000" />
+                                    <label for="amount" class="font-medium">Jumlah</label>
+                                    <input name="amount" class="rounded-md p-3 text-black" type="text" placeholder="Rp 100,000" />
+                                </div>
+
+                                <div class="flex w-fit flex-row items-center justify-center gap-2">
+                                    <label for="withTax" class="font-medium">Tambah Pajak (1%)</label>
+                                    <input class="size-6 rounded-md" checked name="withTax" type="checkbox"></input>
                                 </div>
                             </div>
 
@@ -58,7 +63,7 @@ export default function Page(): JSX.Element {
                 <p class="text-sm text-white">Silakan buat pembayaran QRIS untuk produk atau jasa yang Anda jual.</p>
 
                 <div class="mt-2">
-                    <button onClick={(() => setPaymentDialog(!paymentDialog()))} class="w-fit rounded-full bg-white px-4 py-1.5">
+                    <button onClick={(() => setPaymentDialog(!paymentDialog()))} class="w-fit rounded-full bg-white px-4 py-1.5 hover:opacity-60">
                         <p class="text-sm font-bold uppercase text-black md:text-base">
                             Buat Pembayaran Baru
                         </p>
