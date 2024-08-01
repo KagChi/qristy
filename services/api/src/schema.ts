@@ -1,5 +1,5 @@
 import { HasDefault, NotNull } from "drizzle-orm";
-import { int, mysqlTable, MySqlTimestampBuilderInitial, text, timestamp } from "drizzle-orm/mysql-core";
+import { float, int, mysqlTable, MySqlTimestampBuilderInitial, text, timestamp } from "drizzle-orm/mysql-core";
 
 export function createdAt(name?: string): HasDefault<NotNull<MySqlTimestampBuilderInitial<string>>> {
     return timestamp(name ?? "created_at")
@@ -24,8 +24,10 @@ export const transaction = mysqlTable("transaction", {
 
     amount: int("amount")
         .notNull(),
-    tax: int("tax")
+    tax: float("tax")
         .default(0.01)
+        .notNull(),
+    invoiceId: text("invoice_id")
         .notNull(),
 
     // Returned by payment gateway

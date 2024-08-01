@@ -1,0 +1,1 @@
+ALTER TABLE `transaction` ADD `invoice_id` text NOT NULL;

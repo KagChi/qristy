@@ -8,6 +8,20 @@
       "when": 1722482629895,
       "tag": "0000_powerful_plazm",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1722483491629,
+      "tag": "0001_lethal_chronomancer",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1722483650707,
+      "tag": "0002_cuddly_blob",
+      "breakpoints": true
     }
   ]
 }

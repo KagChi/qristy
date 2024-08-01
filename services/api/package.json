@@ -4,7 +4,7 @@
   "description": "QRISty Backend API.",
   "main": "dist",
   "scripts": {
-    "test": "pnpm run build && node -r dotenv/config dist/index.js",
+    "dev": "pnpm run build && node -r dotenv/config dist/index.js",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "build": "rimraf dist && swc src -d dist --config-file .swcrc --strip-leading-paths"

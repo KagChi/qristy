@@ -13,6 +13,7 @@ import { randomUUID } from "crypto";
 import { createPool } from "mysql2";
 import { drizzle } from "drizzle-orm/mysql2";
 import * as schema from "./schema.js";
+import { eq } from "drizzle-orm";
 
 const db = drizzle(
     createPool({
@@ -55,7 +56,7 @@ app.post("/create", async c => {
     }).json<{ token: string }>();
 
     // Somehow this is not available on sandbox ?! 🤷‍♀️
-    const { status_code, qris_expiration, qris_url, transaction_id } = await got.post(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v2/transactions/${token}/charge`, {
+    const { status_code, qris_expiration_raw, qris_url, transaction_id } = await got.post(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v2/transactions/${token}/charge`, {
         json: {
             payment_params: {
                 acquirer: [
@@ -68,25 +69,28 @@ app.post("/create", async c => {
             "Content-Type": "application/json",
             Authorization: `Basic ${Buffer.from(config.midtransServerKey).toString("base64")}`
         }
-    }).json<{ qris_expiration: string; qris_url: string; transaction_id: string; status_code: string }>();
+    }).json<{ qris_expiration_raw: string; qris_url: string; transaction_id: string; status_code: string }>();
 
     if (Number(status_code) < 200 || Number(status_code) >= 300) {
         return c.json({ message: "Transaction failed" }, 400);
     }
 
     try {
+        console.log(qris_expiration_raw);
         await db.insert(schema.transaction)
             .values({
                 tax,
                 amount,
-                paymentGatewayTransactionId: transactionId,
+                invoiceId: transactionId,
+                paymentGatewayTransactionId: transaction_id,
                 paymentGatewayTransactionStatus: "pending",
-                paymentGatewayTransactionExpireAt: new Date(qris_expiration),
+                paymentGatewayTransactionExpireAt: new Date(qris_expiration_raw),
                 paymentGatewayTransactionQrUrl: qris_url
             });
 
-        return c.json({ qris_expiration, qris_url, transaction_id });
-    } catch {
+        return c.json({ qris_expiration: qris_expiration_raw, qris_url, transaction_id });
+    } catch (error) {
+        logger.error(error, "An error ocurred while dispatching requests");
         return c.json({ message: "Transaction failed" }, 500);
     }
 });
@@ -99,3 +103,39 @@ const io = new Server(server);
 io.on("connection", socket => {
     logger.info(`Client connected: ${socket.id}`);
 });
+
+async function checkPendingTransactions(): Promise<void> {
+    try {
+        const pendingTransactions = await db
+            .select()
+            .from(schema.transaction)
+            .where(eq(schema.transaction.paymentGatewayTransactionStatus, "pending"));
+
+        for (const transaction of pendingTransactions) {
+            const { transaction_status, issuer } = await got.get(`https://api.midtrans.com/v2/${transaction.paymentGatewayTransactionId}/status`, {
+                headers: {
+                    Authorization: `Basic ${Buffer.from(config.midtransServerKey).toString("base64")}`
+                }
+            }).json<{ transaction_status: string; issuer: string }>();
+
+            if (transaction_status !== "pending") {
+                // Update transaction status in the database
+                await db
+                    .update(schema.transaction)
+                    .set({ paymentGatewayTransactionStatus: transaction_status })
+                    .where(eq(schema.transaction.id, transaction.id));
+
+                // Emit event to connected clients
+                io.emit("transaction_update", {
+                    transactionId: transaction.id,
+                    status: transaction_status,
+                    issuer
+                });
+            }
+        }
+    } catch (error) {
+        logger.error("Error checking pending transactions:", error);
+    }
+}
+
+setInterval(checkPendingTransactions, 15000);
