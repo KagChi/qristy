@@ -14,6 +14,7 @@ import { createPool } from "mysql2";
 import { drizzle } from "drizzle-orm/mysql2";
 import * as schema from "./schema.js";
 import { desc, eq, sql } from "drizzle-orm";
+import { cors } from "hono/cors";
 
 const db = drizzle(
     createPool({
@@ -31,6 +32,9 @@ const logger = pino({
     }
 });
 
+app.use("*", cors({
+    origin: "*"
+}));
 app.use("*", pinoLogger(logger));
 
 app.get("/", c => c.text("Hello World"));

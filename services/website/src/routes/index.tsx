@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // @refresh reload
 
 import { IconCircleX } from "@tabler/icons-solidjs";
-import { createEffect, createSignal, JSX } from "solid-js";
+import { createEffect, createResource, createSignal, For, JSX, Show } from "solid-js";
+import { fetchTransactions } from "../actions/transactions";
 
 export default function Page(): JSX.Element {
     const [paymentDialog, setPaymentDialog] = createSignal(false);
+    const [transactions] = createResource(fetchTransactions);
 
     createEffect(() => {
         const handleOutsideClick = (event: MouseEvent): void => {
@@ -63,50 +68,33 @@ export default function Page(): JSX.Element {
                         <p class="text-xl font-bold text-white">Aktivitas Terbaru</p>
 
                         <div class="mt-4 grid grid-cols-1 gap-2">
-                            <div class="rounded-lg bg-white p-4">
-                                <p class="text-sm font-bold text-black">Invoice #123142</p>
-                                <p class="text-xl text-black">Rp 100.000</p>
-                                <div class="mt-4 flex flex-row justify-between">
-                                    <p class="text-sm font-bold text-black">2024-01-01</p>
-                                    <p class="text-sm font-bold text-black">Gagal</p>
-                                </div>
-                            </div>
+                            <Show when={!transactions.loading}>
+                                <For each={transactions() ?? []}>
+                                    {transaction => <div class="rounded-lg bg-white p-4">
+                                        <p class="text-sm font-bold text-black">Invoice #{transaction.invoiceId}</p>
+                                        <p class="text-xl text-black">Rp {(transaction.amount + (transaction.amount * transaction.tax)).toLocaleString()}</p>
+                                        <div class="mt-4 flex flex-row justify-between">
+                                            <p class="text-sm font-bold text-black">{new Date(transaction.createdAt).toLocaleString()}</p>
+                                            <p class="text-sm font-bold text-black">{transaction.paymentGatewayTransactionStatus.charAt(0).toUpperCase() + transaction.paymentGatewayTransactionStatus.slice(1)}</p>
+                                        </div>
+                                    </div>
+                                    }
+                                </For>
+                            </Show>
 
-                            <div class="rounded-lg bg-white p-4">
-                                <p class="text-sm font-bold text-black">Invoice #123142</p>
-                                <p class="text-xl text-black">Rp 100.000</p>
-                                <div class="mt-4 flex flex-row justify-between">
-                                    <p class="text-sm font-bold text-black">2024-01-01</p>
-                                    <p class="text-sm font-bold text-black">Gagal</p>
-                                </div>
-                            </div>
-
-                            <div class="rounded-lg bg-white p-4">
-                                <p class="text-sm font-bold text-black">Invoice #123142</p>
-                                <p class="text-xl text-black">Rp 100.000</p>
-                                <div class="mt-4 flex flex-row justify-between">
-                                    <p class="text-sm font-bold text-black">2024-01-01</p>
-                                    <p class="text-sm font-bold text-black">Gagal</p>
-                                </div>
-                            </div>
-
-                            <div class="rounded-lg bg-white p-4">
-                                <p class="text-sm font-bold text-black">Invoice #123142</p>
-                                <p class="text-xl text-black">Rp 100.000</p>
-                                <div class="mt-4 flex flex-row justify-between">
-                                    <p class="text-sm font-bold text-black">2024-01-01</p>
-                                    <p class="text-sm font-bold text-black">Gagal</p>
-                                </div>
-                            </div>
-
-                            <div class="rounded-lg bg-white p-4">
-                                <p class="text-sm font-bold text-black">Invoice #123142</p>
-                                <p class="text-xl text-black">Rp 100.000</p>
-                                <div class="mt-4 flex flex-row justify-between">
-                                    <p class="text-sm font-bold text-black">2024-01-01</p>
-                                    <p class="text-sm font-bold text-black">Gagal</p>
-                                </div>
-                            </div>
+                            <Show when={transactions.loading}>
+                                <For each={[1, 2, 3, 4, 5]}>
+                                    {() => <div class="animate-pulse rounded-lg bg-white p-4">
+                                        <div class="h-4 w-1/3 rounded bg-gray-300"></div>
+                                        <div class="mt-2 h-6 w-1/2 rounded bg-gray-300"></div>
+                                        <div class="mt-4 flex flex-row justify-between">
+                                            <div class="h-4 w-1/4 rounded bg-gray-300"></div>
+                                            <div class="h-4 w-1/4 rounded bg-gray-300"></div>
+                                        </div>
+                                    </div>
+                                    }
+                                </For>
+                            </Show>
                         </div>
                     </div>
                 </div>
