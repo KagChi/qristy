@@ -13,7 +13,7 @@ import { randomUUID } from "crypto";
 import { createPool } from "mysql2";
 import { drizzle } from "drizzle-orm/mysql2";
 import * as schema from "./schema.js";
-import { desc, eq, sql } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import { cors } from "hono/cors";
 
 const db = drizzle(
@@ -151,7 +151,7 @@ app.get("/transactions", async c => {
                 .from(schema.transaction)
                 .limit(limit)
                 .offset(offset)
-                .orderBy(desc(schema.transaction.createdAt)),
+                .orderBy(asc(schema.transaction.createdAt)),
             db.select({ count: sql<number>`count(*)` })
                 .from(schema.transaction)
         ]);

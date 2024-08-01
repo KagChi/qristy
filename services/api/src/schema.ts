@@ -4,13 +4,13 @@ import { float, int, mysqlTable, MySqlTimestampBuilderInitial, text, timestamp }
 export function createdAt(name?: string): HasDefault<NotNull<MySqlTimestampBuilderInitial<string>>> {
     return timestamp(name ?? "created_at")
         .notNull()
-        .defaultNow();
+        .$defaultFn(() => new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })));
 }
 
 export function updatedAt(name?: string): HasDefault<NotNull<MySqlTimestampBuilderInitial<string>>> {
     return timestamp(name ?? "updated_at")
         .notNull()
-        .$onUpdate(() => new Date());
+        .$onUpdate(() => new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })));
 }
 
 export const transaction = mysqlTable("transaction", {

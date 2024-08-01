@@ -1,0 +1,1 @@
+ALTER TABLE `transaction` MODIFY COLUMN `created_at` timestamp NOT NULL;
