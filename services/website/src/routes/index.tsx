@@ -1,3 +1,4 @@
+/* eslint-disable prefer-named-capture-group */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -6,17 +7,33 @@
 import { IconCircleX } from "@tabler/icons-solidjs";
 import { createEffect, createResource, createSignal, For, JSX, Show } from "solid-js";
 import { fetchTransactions } from "../actions/transactions";
+import toast from "solid-toast";
 
 export default function Page(): JSX.Element {
     const [paymentDialog, setPaymentDialog] = createSignal(false);
     const [transactions, { mutate }] = createResource(1, fetchTransactions);
     const [moreButtonState, setMoreButtonState] = createSignal(true);
 
+    const [amount, setAmount] = createSignal(0);
+    const [withTax, setWithTax] = createSignal(true);
+
+    const [submitState, setSubmitState] = createSignal(false);
+
+    const submit = async (): Promise<void> => {
+        if (submitState()) {
+            toast("Mohon tunggu...");
+            return;
+        }
+
+        setSubmitState(true);
+    };
+
     createEffect(() => {
         const handleOutsideClick = (event: MouseEvent): void => {
             const target = event.target;
             if (paymentDialog() && target instanceof HTMLElement && !target.closest("#app > dialog > div > form")) {
                 setPaymentDialog(false);
+                setSubmitState(false);
             }
         };
 
@@ -32,7 +49,10 @@ export default function Page(): JSX.Element {
             <dialog open={paymentDialog()} class="fixed inset-0 z-[90] size-full overflow-y-auto bg-transparent backdrop-blur-sm">
                 <IconCircleX class="absolute right-0 top-0 m-4 cursor-pointer text-white" size={32} onClick={() => setPaymentDialog(false)} />
                 <div class="flex size-full items-center justify-center px-4">
-                    <form class="container max-w-2xl rounded-md bg-[#161E1E]" action="">
+                    <form onSubmit={e => {
+                        e.preventDefault();
+                        void submit();
+                    }} class="container max-w-2xl rounded-md bg-[#161E1E]">
                         <div class="flex w-full flex-col gap-4 rounded-md px-6 py-4 text-white">
                             <div class="flex flex-col">
                                 <h1 class="text-start text-2xl font-bold md:text-3xl">Buat pembayaran baru</h1>
@@ -42,16 +62,18 @@ export default function Page(): JSX.Element {
                             <div class="mt-8 flex flex-col gap-2">
                                 <div class="flex w-full flex-col gap-2">
                                     <label for="amount" class="font-medium">Jumlah</label>
-                                    <input name="amount" class="rounded-md p-3 text-black" type="text" placeholder="Rp 100,000" />
+                                    <input required onChange={e => setAmount(Number(e.currentTarget.value))} name="amount" class="rounded-md p-3 text-black" onInput={e => {
+                                        e.currentTarget.value = e.currentTarget.value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+                                    }} placeholder="Rp 100,000" />
                                 </div>
 
                                 <div class="flex w-fit flex-row items-center justify-center gap-2">
                                     <label for="withTax" class="font-medium">Tambah Pajak (1%)</label>
-                                    <input class="size-6 rounded-md" checked name="withTax" type="checkbox"></input>
+                                    <input required onChange={e => setWithTax(e.currentTarget.checked)} checked class="size-6 rounded-md" name="withTax" type="checkbox"></input>
                                 </div>
                             </div>
 
-                            <button type="submit" class="w-full rounded-md bg-white px-4 py-2 font-bold text-black hover:opacity-60">
+                            <button disabled={submitState()} class={`w-full rounded-md bg-white px-4 py-2 font-bold text-black ${submitState() ? "cursor-not-allowed" : "hover:opacity-60"}`}>
                                 Buat Pembayaran
                             </button>
                         </div>

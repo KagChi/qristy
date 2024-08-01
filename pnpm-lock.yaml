@@ -99,6 +99,9 @@ importers:
       solid-js:
         specifier: ^1.8.19
         version: 1.8.19
+      solid-toast:
+        specifier: ^0.5.0
+        version: 0.5.0(solid-js@1.8.19)
       vinxi:
         specifier: ^0.4.1
         version: 0.4.1(@types/node@20.14.13)(ioredis@5.4.1)(terser@5.31.3)
@@ -3603,6 +3606,11 @@ packages:
     resolution: {integrity: sha512-F3aPsX6hVw9ttm5LYlth8Q15x6MlI/J3Dn+o3EQyRTtTxidepSTwAYdozt01/YA+7ObcciagGEyXIopGZzQtbA==}
     peerDependencies:
       solid-js: ^1.3
+
+  solid-toast@0.5.0:
+    resolution: {integrity: sha512-t770JakjyS2P9b8Qa1zMLOD51KYKWXbTAyJePVUoYex5c5FH5S/HtUBUbZAWFcqRCKmAE8KhyIiCvDZA8bOnxQ==}
+    peerDependencies:
+      solid-js: ^1.5.4
 
   solid-use@0.8.0:
     resolution: {integrity: sha512-YX+XmcKLvSx3bwMimMhFy40ZkDnShnUcEw6cW6fSscwKEgl1TG3GlgAvkBmQ3AeWjvQSd8+HGTr82ImsrjkkqA==}
@@ -7514,6 +7522,10 @@ snapshots:
       solid-js: 1.8.19
     transitivePeerDependencies:
       - supports-color
+
+  solid-toast@0.5.0(solid-js@1.8.19):
+    dependencies:
+      solid-js: 1.8.19
 
   solid-use@0.8.0(solid-js@1.8.19):
     dependencies:
