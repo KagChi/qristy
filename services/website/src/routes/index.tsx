@@ -10,6 +10,7 @@ import { fetchTransactions } from "../actions/transactions";
 export default function Page(): JSX.Element {
     const [paymentDialog, setPaymentDialog] = createSignal(false);
     const [transactions, { mutate }] = createResource(1, fetchTransactions);
+    const [moreButtonState, setMoreButtonState] = createSignal(true);
 
     createEffect(() => {
         const handleOutsideClick = (event: MouseEvent): void => {
@@ -96,7 +97,7 @@ export default function Page(): JSX.Element {
                                 </For>
                             </Show>
 
-                            <Show when={!transactions.loading && (transactions()?.length ?? 0) > 0}>
+                            <Show when={!transactions.loading && (transactions()?.length ?? 0) > 0 && moreButtonState()}>
                                 <div class="mt-4 flex justify-center">
                                     <button
                                         onClick={() => {
@@ -104,11 +105,12 @@ export default function Page(): JSX.Element {
                                             const nextPage = currentPage + 1;
                                             void fetchTransactions(nextPage).then(newTransactions => {
                                                 mutate(prev => [...prev ?? [], ...newTransactions]);
+                                                if (newTransactions.length <= 0) setMoreButtonState(false);
                                             });
                                         }}
                                         class="rounded-full bg-white px-4 py-2 text-sm font-bold text-black hover:bg-gray-100"
                                     >
-                                        Muat Data
+                                        Muat Data Lebih Banyak
                                     </button>
                                 </div>
                             </Show>
