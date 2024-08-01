@@ -13,7 +13,7 @@ import { randomUUID } from "crypto";
 import { createPool } from "mysql2";
 import { drizzle } from "drizzle-orm/mysql2";
 import * as schema from "./schema.js";
-import { eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 const db = drizzle(
     createPool({
@@ -36,15 +36,15 @@ app.use("*", pinoLogger(logger));
 app.get("/", c => c.text("Hello World"));
 
 app.post("/create", async c => {
-    const { amount, with_tax } = await c.req.json<{ amount: number; with_tax: boolean }>();
+    const { amount, withTax } = await c.req.json<{ amount: number; withTax: boolean }>();
 
-    const transactionId = randomUUID();
-    const tax = with_tax ? 0.01 : 0;
+    const invoiceId = randomUUID();
+    const tax = withTax ? 0.01 : 0;
 
     const { token } = await got.post(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v1/transactions`, {
         json: {
             transaction_details: {
-                order_id: randomUUID(),
+                order_id: invoiceId,
                 gross_amount: Math.ceil(amount + (amount * tax))
             },
             enabled_payments: ["gopay"]
@@ -76,24 +76,99 @@ app.post("/create", async c => {
     }
 
     try {
-        console.log(qris_expiration_raw);
         await db.insert(schema.transaction)
             .values({
                 tax,
                 amount,
-                invoiceId: transactionId,
+                invoiceId,
                 paymentGatewayTransactionId: transaction_id,
                 paymentGatewayTransactionStatus: "pending",
                 paymentGatewayTransactionExpireAt: new Date(qris_expiration_raw),
                 paymentGatewayTransactionQrUrl: qris_url
             });
 
-        return c.json({ qris_expiration: qris_expiration_raw, qris_url, transaction_id });
+        return c.json({ qrisExpiration: qris_expiration_raw, qrisUrl: qris_url, transactionId: transaction_id, invoiceId });
     } catch (error) {
         logger.error(error, "An error ocurred while dispatching requests");
         return c.json({ message: "Transaction failed" }, 500);
     }
 });
+
+app.get("/transaction/:id", async c => {
+    const invoiceId = c.req.param("id");
+
+    try {
+        const transaction = await db
+            .select({
+                createdAt: schema.transaction.createdAt,
+                updatedAt: schema.transaction.updatedAt,
+                amount: schema.transaction.amount,
+                tax: schema.transaction.tax,
+                invoiceId: schema.transaction.invoiceId,
+                paymentGatewayTransactionQrUrl: schema.transaction.paymentGatewayTransactionQrUrl,
+                paymentGatewayTransactionId: schema.transaction.paymentGatewayTransactionId,
+                paymentGatewayTransactionStatus: schema.transaction.paymentGatewayTransactionStatus,
+                paymentGatewayTransactionExpireAt: schema.transaction.paymentGatewayTransactionExpireAt
+            })
+            .from(schema.transaction)
+            .where(eq(schema.transaction.invoiceId, invoiceId))
+            .limit(1);
+
+        if (transaction.length === 0) {
+            return c.json({ message: "Transaction not found" }, 404);
+        }
+
+        return c.json(transaction[0]);
+    } catch (error) {
+        logger.error(error, "An error occurred while fetching the transaction");
+        return c.json({ message: "Failed to fetch transaction" }, 500);
+    }
+});
+
+
+app.get("/transactions", async c => {
+    const page = Number(c.req.query("page")) || 1;
+    const limit = Number(c.req.query("limit")) || 10;
+    const offset = (page - 1) * limit;
+
+    try {
+        const [transactions, totalCount] = await Promise.all([
+            db.select({
+                createdAt: schema.transaction.createdAt,
+                updatedAt: schema.transaction.updatedAt,
+                amount: schema.transaction.amount,
+                tax: schema.transaction.tax,
+                invoiceId: schema.transaction.invoiceId,
+                paymentGatewayTransactionQrUrl: schema.transaction.paymentGatewayTransactionQrUrl,
+                paymentGatewayTransactionId: schema.transaction.paymentGatewayTransactionId,
+                paymentGatewayTransactionStatus: schema.transaction.paymentGatewayTransactionStatus,
+                paymentGatewayTransactionExpireAt: schema.transaction.paymentGatewayTransactionExpireAt
+            })
+                .from(schema.transaction)
+                .limit(limit)
+                .offset(offset)
+                .orderBy(desc(schema.transaction.createdAt)),
+            db.select({ count: sql<number>`count(*)` })
+                .from(schema.transaction)
+        ]);
+
+        const totalPages = Math.ceil(totalCount[0].count / limit);
+
+        return c.json({
+            transactions,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalItems: totalCount[0].count,
+                itemsPerPage: limit
+            }
+        });
+    } catch (error) {
+        logger.error(error, "An error occurred while fetching transactions");
+        return c.json({ message: "Failed to fetch transactions" }, 500);
+    }
+});
+
 
 const server = serve({ fetch: app.fetch, port: 3001 }, info => {
     logger.info(`Server is running on port ${info.port}`);
