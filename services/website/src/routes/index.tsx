@@ -9,7 +9,7 @@ import { fetchTransactions } from "../actions/transactions";
 
 export default function Page(): JSX.Element {
     const [paymentDialog, setPaymentDialog] = createSignal(false);
-    const [transactions] = createResource(fetchTransactions);
+    const [transactions, { mutate }] = createResource(1, fetchTransactions);
 
     createEffect(() => {
         const handleOutsideClick = (event: MouseEvent): void => {
@@ -69,7 +69,7 @@ export default function Page(): JSX.Element {
 
                         <div class="mt-4 grid grid-cols-1 gap-2">
                             <Show when={!transactions.loading}>
-                                <For each={transactions() ?? []}>
+                                <For each={transactions()}>
                                     {transaction => <div class="rounded-lg bg-white p-4">
                                         <p class="text-sm font-bold text-black">Invoice #{transaction.invoiceId}</p>
                                         <p class="text-xl text-black">Rp {(transaction.amount + (transaction.amount * transaction.tax)).toLocaleString()}</p>
@@ -94,6 +94,23 @@ export default function Page(): JSX.Element {
                                     </div>
                                     }
                                 </For>
+                            </Show>
+
+                            <Show when={!transactions.loading && (transactions()?.length ?? 0) > 0}>
+                                <div class="mt-4 flex justify-center">
+                                    <button
+                                        onClick={() => {
+                                            const currentPage = Math.ceil(transactions()!.length / 10);
+                                            const nextPage = currentPage + 1;
+                                            void fetchTransactions(nextPage).then(newTransactions => {
+                                                mutate(prev => [...prev ?? [], ...newTransactions]);
+                                            });
+                                        }}
+                                        class="rounded-full bg-white px-4 py-2 text-sm font-bold text-black hover:bg-gray-100"
+                                    >
+                                        Muat Data
+                                    </button>
+                                </div>
                             </Show>
                         </div>
                     </div>

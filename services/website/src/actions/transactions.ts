@@ -11,9 +11,9 @@ export interface Transaction {
     paymentGatewayTransactionExpireAt: string;
 }
 
-export const fetchTransactions = async (): Promise<Transaction[]> => {
+export const fetchTransactions = async (page: number): Promise<Transaction[]> => {
     try {
-        const response: Response = await fetch("http://localhost:3001/transactions");
+        const response: Response = await fetch(`http://localhost:3001/transactions?page=${page}`);
         if (!response.ok) {
             throw new Error("Failed to fetch transactions");
         }
