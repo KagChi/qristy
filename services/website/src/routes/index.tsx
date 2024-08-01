@@ -6,7 +6,7 @@
 
 import { IconCircleX } from "@tabler/icons-solidjs";
 import { createEffect, createResource, createSignal, For, JSX, Show } from "solid-js";
-import { fetchTransactions } from "../actions/transactions";
+import { createTransaction, fetchTransactions } from "../actions/transactions";
 import toast from "solid-toast";
 
 export default function Page(): JSX.Element {
@@ -21,11 +21,20 @@ export default function Page(): JSX.Element {
 
     const submit = async (): Promise<void> => {
         if (submitState()) {
-            toast("Mohon tunggu...");
+            toast("Mohon tunggu...", { icon: "🔃" });
             return;
         }
 
         setSubmitState(true);
+        try {
+            await createTransaction(amount(), withTax());
+            toast("Sukses membuat transaksi!", { icon: "✅" });
+            setSubmitState(false);
+        } catch (e) {
+            console.log(e);
+            toast.error("Gagal untuk membuat transaksi", { icon: "❌" });
+            setSubmitState(false);
+        }
     };
 
     createEffect(() => {
@@ -62,9 +71,20 @@ export default function Page(): JSX.Element {
                             <div class="mt-8 flex flex-col gap-2">
                                 <div class="flex w-full flex-col gap-2">
                                     <label for="amount" class="font-medium">Jumlah</label>
-                                    <input required onChange={e => setAmount(Number(e.currentTarget.value))} name="amount" class="rounded-md p-3 text-black" onInput={e => {
-                                        e.currentTarget.value = e.currentTarget.value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
-                                    }} placeholder="Rp 100,000" />
+                                    <input
+                                        required
+                                        onChange={e => {
+                                            const value = Number(e.currentTarget.value.replace(/[^0-9]/g, ""));
+                                            setAmount(value);
+                                            e.currentTarget.value = value.toLocaleString("id-ID", { style: "currency", currency: "IDR" });
+                                        }}
+                                        name="amount"
+                                        class="rounded-md p-3 text-black"
+                                        onInput={e => {
+                                            e.currentTarget.value = e.currentTarget.value.replace(/[^0-9.,]/g, "");
+                                        }}
+                                        placeholder="Rp 100.000"
+                                    />
                                 </div>
 
                                 <div class="flex w-fit flex-row items-center justify-center gap-2">

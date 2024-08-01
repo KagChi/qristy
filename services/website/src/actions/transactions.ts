@@ -24,3 +24,21 @@ export const fetchTransactions = async (page: number): Promise<Transaction[]> =>
         throw error;
     }
 };
+
+export const createTransaction = async (amount: number, withTax: boolean): Promise<void> => {
+    try {
+        const response: Response = await fetch("http://localhost:3001/create", {
+            method: "POST",
+            body: JSON.stringify({
+                amount,
+                withTax
+            })
+        });
+        if (!response.ok) {
+            throw new Error("Failed to create transaction");
+        }
+    } catch (error) {
+        console.error("Error creating transaction:", error);
+        throw error;
+    }
+};

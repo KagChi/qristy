@@ -1,6 +1,7 @@
 import { mount, StartClient } from "@solidjs/start/client";
 import { LenisContext } from "./contexts/Lenis";
 import Lenis from "lenis";
+import { Toaster } from "solid-toast";
 
 mount(() => {
     const lenis = new Lenis();
@@ -23,6 +24,7 @@ mount(() => {
             <link href="https://fonts.googleapis.com/css?family=Baloo+2&display=optional" rel="stylesheet" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
             <StartClient />
+            <Toaster />
         </LenisContext.Provider>
     );
 }, document.getElementById("app")!);
