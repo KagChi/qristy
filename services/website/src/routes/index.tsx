@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // @refresh reload
 
-import { IconCircleX } from "@tabler/icons-solidjs";
+import { IconCircleX, IconEye } from "@tabler/icons-solidjs";
 import { createEffect, createResource, createSignal, For, JSX, Show } from "solid-js";
 import { createTransaction, fetchTransactions } from "../actions/transactions";
 import toast from "solid-toast";
@@ -18,6 +18,8 @@ export default function Page(): JSX.Element {
     const [withTax, setWithTax] = createSignal(true);
 
     const [submitState, setSubmitState] = createSignal(false);
+
+    const [transactionId, setTransactionId] = createSignal<string | null>(null);
 
     const submit = async (): Promise<void> => {
         if (submitState()) {
@@ -40,9 +42,10 @@ export default function Page(): JSX.Element {
     createEffect(() => {
         const handleOutsideClick = (event: MouseEvent): void => {
             const target = event.target;
-            if (paymentDialog() && target instanceof HTMLElement && !target.closest("#app > dialog > div > form")) {
+            if ((paymentDialog() || transactionId()) && target instanceof HTMLElement && (!target.closest("#app > dialog > div > form") || !target.closest("#app > dialog:nth-child(7) > div > div"))) {
                 setPaymentDialog(false);
                 setSubmitState(false);
+                setTransactionId(null);
             }
         };
 
@@ -51,7 +54,7 @@ export default function Page(): JSX.Element {
         return () => {
             document.removeEventListener("mousedown", handleOutsideClick);
         };
-    }, [paymentDialog()]);
+    }, [paymentDialog(), transactionId()]);
 
     return (
         <>
@@ -100,6 +103,34 @@ export default function Page(): JSX.Element {
                     </form>
                 </div>
             </dialog>
+
+            <dialog open={transactionId() !== null} class="fixed inset-0 z-[90] size-full overflow-y-auto bg-transparent backdrop-blur-sm">
+                <div class="flex size-full items-center justify-center">
+                    <div class="container flex max-w-md flex-col items-center justify-center gap-4 rounded-md bg-[#161E1E] px-4 py-6 text-white">
+                        <div class="text-center">
+                            <h1 class="text-4xl font-bold">QRIS</h1>
+                            <p>Nominal: Rp 10,000</p>
+                        </div>
+                        <img class="size-64 rounded-md" src="https://api.midtrans.com/v2/qris/9422f5ab-c31f-45ff-90f9-75874b4867cf/qr-code" />
+
+                        <div class="flex flex-col items-center justify-center">
+                            <p class="text-2xl font-bold">Weebsy</p>
+                            <p class="text-xs text-white/20">ID Pembayaran: {transactionId()}</p>
+                        </div>
+
+                        <div class="flex w-full flex-col gap-1">
+                            <div class="w-full rounded-md bg-white/10 px-4 py-2">
+                                <p class="text-center text-lg font-bold">Status: Pending</p>
+                            </div>
+
+                            <button onClick={() => setTransactionId(null)} class="w-full rounded-md bg-red-500 px-4 py-2 hover:opacity-60">
+                                <p class="text-center font-bold">Tutup</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </dialog>
+
             <main class="container min-h-screen max-w-2xl p-4 md:px-0">
                 <h1 class="text-2xl font-bold text-white md:text-4xl">Selamat Datang!</h1>
                 <p class="text-sm text-white">Silakan buat pembayaran QRIS untuk produk atau jasa yang Anda jual.</p>
@@ -121,9 +152,14 @@ export default function Page(): JSX.Element {
                                     {transaction => <div class="rounded-lg bg-white p-4">
                                         <p class="text-sm font-bold text-black">Invoice #{transaction.invoiceId}</p>
                                         <p class="text-xl text-black">Rp {(transaction.amount + (transaction.amount * transaction.tax)).toLocaleString()}</p>
-                                        <div class="mt-4 flex flex-row justify-between">
-                                            <p class="text-sm font-bold text-black">{new Date(transaction.createdAt).toLocaleString()}</p>
-                                            <p class="text-sm font-bold text-black">{transaction.paymentGatewayTransactionStatus.charAt(0).toUpperCase() + transaction.paymentGatewayTransactionStatus.slice(1)}</p>
+                                        <div class="mt-4 flex flex-row items-end justify-between">
+                                            <div class="flex flex-col">
+                                                <p class="text-xl font-bold text-black">{transaction.paymentGatewayTransactionStatus.charAt(0).toUpperCase() + transaction.paymentGatewayTransactionStatus.slice(1)}</p>
+                                                <p class="text-sm font-bold text-black">{new Date(transaction.createdAt).toLocaleString()}</p>
+                                            </div>
+                                            <button onClick={() => setTransactionId(transaction.invoiceId)} class="rounded-md bg-gray-300 p-2 hover:opacity-60">
+                                                <IconEye />
+                                            </button>
                                         </div>
                                     </div>
                                     }
@@ -135,9 +171,12 @@ export default function Page(): JSX.Element {
                                     {() => <div class="animate-pulse rounded-lg bg-white p-4">
                                         <div class="h-4 w-1/3 rounded bg-gray-300"></div>
                                         <div class="mt-2 h-6 w-1/2 rounded bg-gray-300"></div>
-                                        <div class="mt-4 flex flex-row justify-between">
-                                            <div class="h-4 w-1/4 rounded bg-gray-300"></div>
-                                            <div class="h-4 w-1/4 rounded bg-gray-300"></div>
+                                        <div class="mt-4 flex flex-row items-end justify-between">
+                                            <div class="flex flex-row items-end gap-2">
+                                                <div class="h-4 w-20 rounded bg-gray-300"></div>
+                                                <div class="h-4 w-1/4 rounded bg-gray-300"></div>
+                                            </div>
+                                            <div class="size-10 rounded bg-gray-300"></div>
                                         </div>
                                     </div>
                                     }
