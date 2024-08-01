@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1722482629895,
+      "tag": "0000_powerful_plazm",
+      "breakpoints": true
+    }
+  ]
+}
