@@ -88,7 +88,7 @@ export default function Page(): JSX.Element {
                         await refetchTransactions();
                         for (let i = 0; i < 5; i++) {
                             const audioTag = document.createElement("audio");
-                            audioTag.src = "public/cash.mp3";
+                            audioTag.src = "cash.mp3";
                             await audioTag.play();
                             await new Promise(resolve => setTimeout(resolve, 400));
                         }
