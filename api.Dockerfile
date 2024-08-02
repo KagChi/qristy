@@ -23,9 +23,11 @@ WORKDIR /app
 
 RUN apk add --no-cache tzdata
 
-COPY --from=build-stage /tmp/build/services/api/package.json .
-COPY --from=build-stage /tmp/build/pnpm-lock.yaml .
-COPY --from=build-stage /tmp/build/services/api/node_modules ./node_modules
-COPY --from=build-stage /tmp/build/services/api/dist ./dist
+COPY --from=build-stage /tmp/build/services/api/package.json ./services/api/package.json
+COPY --from=build-stage /tmp/build/services/api/node_modules ./services/api/node_modules
+COPY --from=build-stage /tmp/build/services/api/dist ./services/api/dist
 
-CMD node dist/index.js
+COPY --from=build-stage /tmp/build/pnpm-lock.yaml .
+COPY --from=build-stage /tmp/build/node_modules ./node_modules
+
+CMD node ./services/api/dist/index.js
