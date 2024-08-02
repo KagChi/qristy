@@ -24,8 +24,8 @@
   "devDependencies": {
     "@hazmi35/eslint-config": "^12.0.0",
     "@swc/cli": "^0.4.0",
-    "@swc/core": "^1.7.4",
-    "@types/node": "^20.14.13",
+    "@swc/core": "^1.7.5",
+    "@types/node": "^20.14.14",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",
     "dotenv": "^16.4.5",
