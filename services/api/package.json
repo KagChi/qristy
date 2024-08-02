@@ -9,7 +9,7 @@
     "lint:fix": "eslint src --fix",
     "build": "rimraf dist && swc src -d dist --config-file .swcrc --strip-leading-paths"
   },
-  "type": "commonjs",
+  "type": "module",
   "author": "KagChi",
   "license": "GPL-3.0",
   "eslintConfig": {
@@ -36,8 +36,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.12.0",
-    "axios": "^1.7.3",
     "drizzle-orm": "^0.32.1",
+    "got": "^14.4.2",
     "hono": "^4.5.3",
     "hono-pino-logger": "^1.0.0",
     "mysql2": "^3.11.0",

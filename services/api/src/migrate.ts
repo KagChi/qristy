@@ -2,8 +2,8 @@ import "dotenv/config";
 import { migrate } from "drizzle-orm/mysql2/migrator";
 import { createConnection } from "mysql2/promise";
 import { drizzle } from "drizzle-orm/mysql2";
-import * as schema from "./schema";
-import { config } from "./config";
+import * as schema from "./schema.js";
+import { config } from "./config.js";
 
 void (async () => {
     const connection = await createConnection({

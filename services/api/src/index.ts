@@ -6,14 +6,14 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { pinoLogger } from "hono-pino-logger";
 import { pino } from "pino";
-import { config } from "./config";
+import { config } from "./config.js";
 import { randomUUID } from "crypto";
 import { createPool } from "mysql2";
 import { drizzle } from "drizzle-orm/mysql2";
-import * as schema from "./schema";
+import * as schema from "./schema.js";
 import { desc, eq, sql } from "drizzle-orm";
 import { cors } from "hono/cors";
-import axios from "axios";
+import got from "got";
 
 const db = drizzle(
     createPool({
@@ -45,8 +45,8 @@ app.post("/create", async c => {
     const invoiceId = randomUUID();
     const tax = withTax ? 0.01 : 0;
 
-    const { token } = await axios.post<any, { data: { token: string } }>(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v1/transactions`, {
-        data: {
+    const { token } = await got.post(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v1/transactions`, {
+        json: {
             transaction_details: {
                 order_id: invoiceId,
                 gross_amount: Math.ceil(amount + (amount * tax))
@@ -57,12 +57,11 @@ app.post("/create", async c => {
             "Content-Type": "application/json",
             Authorization: `Basic ${Buffer.from(config.midtransServerKey).toString("base64")}`
         }
-    })
-        .then(x => x.data);
+    }).json<{ token: string }>();
 
     // Somehow this is not available on sandbox ?! 🤷‍♀️
-    const { status_code, qris_expiration_raw, qris_url, transaction_id } = await axios.post<any, { data: { qris_expiration_raw: string; qris_url: string; transaction_id: string; status_code: string } }>(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v2/transactions/${token}/charge`, {
-        data: {
+    const { status_code, qris_expiration_raw, qris_url, transaction_id } = await got.post(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v2/transactions/${token}/charge`, {
+        json: {
             payment_params: {
                 acquirer: [
                     "gopay"
@@ -74,8 +73,7 @@ app.post("/create", async c => {
             "Content-Type": "application/json",
             Authorization: `Basic ${Buffer.from(config.midtransServerKey).toString("base64")}`
         }
-    })
-        .then(x => x.data);
+    }).json<{ qris_expiration_raw: string; qris_url: string; transaction_id: string; status_code: string }>();
 
     if (Number(status_code) < 200 || Number(status_code) >= 300) {
         return c.json({ message: "Transaction failed" }, 400);
@@ -203,12 +201,11 @@ async function checkPendingTransactions(): Promise<void> {
             .where(eq(schema.transaction.paymentGatewayTransactionStatus, "pending"));
 
         for (const transaction of pendingTransactions) {
-            const { transaction_status } = await axios.get<any, { data: { transaction_status: string } }>(`https://api.midtrans.com/v2/${transaction.paymentGatewayTransactionId}/status`, {
+            const { transaction_status } = await got.get(`https://api.midtrans.com/v2/${transaction.paymentGatewayTransactionId}/status`, {
                 headers: {
                     Authorization: `Basic ${Buffer.from(config.midtransServerKey).toString("base64")}`
                 }
-            })
-                .then(x => x.data);
+            }).json<{ transaction_status: string }>();
 
             if (transaction_status !== "pending") {
                 // Update transaction status in the database
