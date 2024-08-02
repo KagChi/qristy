@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-loop-func */
 /* eslint-disable prefer-named-capture-group */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
@@ -20,7 +21,7 @@ export default function Page(): JSX.Element {
     const [submitState, setSubmitState] = createSignal(false);
 
     const [transactionId, setTransactionId] = createSignal<string | null>(null);
-    const [transaction] = createResource(transactionId, fetchTransaction);
+    const [transaction, { refetch: refetchTransaction }] = createResource(transactionId, fetchTransaction);
 
     const submit = async (): Promise<void> => {
         if (submitState()) {
@@ -76,6 +77,30 @@ export default function Page(): JSX.Element {
         };
     }, [transactionId()]);
 
+    createEffect(() => {
+        const trx = transaction();
+
+        if (trx !== undefined && trx.paymentGatewayTransactionStatus === "pending") {
+            try {
+                setTimeout(async () => {
+                    const newTrx = await refetchTransaction();
+                    if (newTrx !== undefined && newTrx !== null && newTrx.paymentGatewayTransactionStatus === "settlement") {
+                        toast("Transaksi sukses!", { icon: "✅" });
+                        for (let i = 0; i < 5; i++) {
+                            const audioTag = document.createElement("audio");
+                            audioTag.src = "public/cash.mp3";
+                            await audioTag.play();
+                            await new Promise(resolve => setTimeout(resolve, 400));
+                        }
+                    }
+                }, 5000);
+            } catch (error) {
+                toast.error("Gagal memuat informasi transaksi terbaru, mencoba lagi...", { icon: "🔃" });
+                console.error("Error refetching transaction:", error);
+            }
+        }
+    }, [transaction()]);
+
     return (
         <>
             <dialog open={paymentDialog()} class="fixed inset-0 z-[90] size-full overflow-y-auto bg-transparent backdrop-blur-sm">
@@ -112,7 +137,7 @@ export default function Page(): JSX.Element {
 
                                 <div class="flex w-fit flex-row items-center justify-center gap-2">
                                     <label for="withTax" class="font-medium">Tambah Pajak (1%)</label>
-                                    <input required onChange={e => setWithTax(e.currentTarget.checked)} checked class="size-6 rounded-md" name="withTax" type="checkbox"></input>
+                                    <input onChange={e => setWithTax(e.currentTarget.checked)} checked class="size-6 rounded-md" name="withTax" type="checkbox"></input>
                                 </div>
                             </div>
 
@@ -140,7 +165,7 @@ export default function Page(): JSX.Element {
                         }>
                             <div class="text-center">
                                 <h1 class="text-4xl font-bold">QRIS</h1>
-                                <p>Nominal: Rp {(transaction()!.amount + (transaction()!.tax * transaction()!.amount)).toLocaleString("id-ID")}</p>
+                                <p>Nominal: Rp {Math.ceil(transaction()!.amount + (transaction()!.tax * transaction()!.amount)).toLocaleString("id-ID")}</p>
                             </div>
                             <img class="size-64 rounded-md" src={transaction()!.paymentGatewayTransactionQrUrl} />
 
@@ -153,7 +178,7 @@ export default function Page(): JSX.Element {
                                 <div class="w-full rounded-md bg-white/10 px-4 py-2">
                                     <p class="text-center text-lg font-bold">Status: {transaction()!.paymentGatewayTransactionStatus.charAt(0).toUpperCase() + transaction()!.paymentGatewayTransactionStatus.slice(1)}</p>
                                     <Show when={transaction()!.paymentGatewayTransactionStatus !== "settlement" && new Date(transaction()!.paymentGatewayTransactionExpireAt) > new Date()}>
-                                        <p class="text-center text-lg font-bold">Sampai: {new Date(transaction()!.paymentGatewayTransactionExpireAt).toLocaleString()}</p>
+                                        <p class="text-center text-lg font-bold">Berlaku Sampai: {new Date(transaction()!.paymentGatewayTransactionExpireAt).toLocaleString()}</p>
                                     </Show>
                                 </div>
 
@@ -186,7 +211,7 @@ export default function Page(): JSX.Element {
                                 <For each={transactions()}>
                                     {trx => <div class="rounded-lg bg-white p-4">
                                         <p class="text-sm font-bold text-black">Invoice #{trx.invoiceId}</p>
-                                        <p class="text-xl text-black">Rp {(trx.amount + (trx.amount * trx.tax)).toLocaleString()}</p>
+                                        <p class="text-xl text-black">Rp {Math.ceil(trx.amount + (trx.amount * trx.tax)).toLocaleString()}</p>
                                         <div class="mt-4 flex flex-row items-end justify-between">
                                             <div class="flex flex-col">
                                                 <p class="text-xl font-bold text-black">{trx.paymentGatewayTransactionStatus.charAt(0).toUpperCase() + trx.paymentGatewayTransactionStatus.slice(1)}</p>
