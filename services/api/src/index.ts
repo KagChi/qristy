@@ -17,6 +17,7 @@ import axios from "axios";
 
 const db = drizzle(
     createPool({
+        host: config.mysql.host,
         database: config.mysql.database,
         port: config.mysql.port,
         user: config.mysql.user,
