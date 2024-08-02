@@ -13,7 +13,7 @@ export interface Transaction {
 
 export const fetchTransactions = async (page: number): Promise<Transaction[]> => {
     try {
-        const response: Response = await fetch(`http://localhost:3001/transactions?page=${page}`);
+        const response: Response = await fetch(`/api/transactions?page=${page}`);
         if (!response.ok) {
             throw new Error("Failed to fetch transactions");
         }
@@ -27,7 +27,7 @@ export const fetchTransactions = async (page: number): Promise<Transaction[]> =>
 
 export const fetchTransaction = async (transactionId: string): Promise<Transaction> => {
     try {
-        const response: Response = await fetch(`http://localhost:3001/transaction/${transactionId}`);
+        const response: Response = await fetch(`/api/transaction/${transactionId}`);
         if (!response.ok) {
             throw new Error("Failed to fetch transactions");
         }
@@ -40,7 +40,7 @@ export const fetchTransaction = async (transactionId: string): Promise<Transacti
 
 export const createTransaction = async (amount: number, withTax: boolean): Promise<Transaction> => {
     try {
-        const response: Response = await fetch("http://localhost:3001/create", {
+        const response: Response = await fetch("/api/create", {
             method: "POST",
             body: JSON.stringify({
                 amount,

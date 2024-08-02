@@ -6,15 +6,14 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { pinoLogger } from "hono-pino-logger";
 import { pino } from "pino";
-import { Server } from "socket.io";
-import { got } from "got";
-import { config } from "./config.js";
+import { config } from "./config";
 import { randomUUID } from "crypto";
 import { createPool } from "mysql2";
 import { drizzle } from "drizzle-orm/mysql2";
-import * as schema from "./schema.js";
+import * as schema from "./schema";
 import { desc, eq, sql } from "drizzle-orm";
 import { cors } from "hono/cors";
+import axios from "axios";
 
 const db = drizzle(
     createPool({
@@ -45,7 +44,7 @@ app.post("/create", async c => {
     const invoiceId = randomUUID();
     const tax = withTax ? 0.01 : 0;
 
-    const { token } = await got.post(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v1/transactions`, {
+    const { token } = await axios.post<any, { data: { token: string } }>(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v1/transactions`, {
         json: {
             transaction_details: {
                 order_id: invoiceId,
@@ -57,10 +56,11 @@ app.post("/create", async c => {
             "Content-Type": "application/json",
             Authorization: `Basic ${Buffer.from(config.midtransServerKey).toString("base64")}`
         }
-    }).json<{ token: string }>();
+    })
+        .then(x => x.data);
 
     // Somehow this is not available on sandbox ?! 🤷‍♀️
-    const { status_code, qris_expiration_raw, qris_url, transaction_id } = await got.post(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v2/transactions/${token}/charge`, {
+    const { status_code, qris_expiration_raw, qris_url, transaction_id } = await axios.post<any, { data: { qris_expiration_raw: string; qris_url: string; transaction_id: string; status_code: string } }>(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v2/transactions/${token}/charge`, {
         json: {
             payment_params: {
                 acquirer: [
@@ -73,7 +73,8 @@ app.post("/create", async c => {
             "Content-Type": "application/json",
             Authorization: `Basic ${Buffer.from(config.midtransServerKey).toString("base64")}`
         }
-    }).json<{ qris_expiration_raw: string; qris_url: string; transaction_id: string; status_code: string }>();
+    })
+        .then(x => x.data);
 
     if (Number(status_code) < 200 || Number(status_code) >= 300) {
         return c.json({ message: "Transaction failed" }, 400);
@@ -189,13 +190,8 @@ app.get("/transactions", async c => {
 });
 
 
-const server = serve({ fetch: app.fetch, port: 3001 }, info => {
+serve({ fetch: app.fetch, port: 3001 }, info => {
     logger.info(`Server is running on port ${info.port}`);
-});
-
-const io = new Server(server);
-io.on("connection", socket => {
-    logger.info(`Client connected: ${socket.id}`);
 });
 
 async function checkPendingTransactions(): Promise<void> {
@@ -206,28 +202,24 @@ async function checkPendingTransactions(): Promise<void> {
             .where(eq(schema.transaction.paymentGatewayTransactionStatus, "pending"));
 
         for (const transaction of pendingTransactions) {
-            const { transaction_status, issuer } = await got.get(`https://api.midtrans.com/v2/${transaction.paymentGatewayTransactionId}/status`, {
+            const { transaction_status } = await axios.get<any, { data: { transaction_status: string } }>(`https://api.midtrans.com/v2/${transaction.paymentGatewayTransactionId}/status`, {
                 headers: {
                     Authorization: `Basic ${Buffer.from(config.midtransServerKey).toString("base64")}`
                 }
-            }).json<{ transaction_status: string; issuer: string }>();
+            })
+                .then(x => x.data);
 
             if (transaction_status !== "pending") {
                 // Update transaction status in the database
+                console.log(transaction_status);
                 await db
                     .update(schema.transaction)
                     .set({ paymentGatewayTransactionStatus: transaction_status })
                     .where(eq(schema.transaction.id, transaction.id));
-
-                // Emit event to connected clients
-                io.emit("transaction_update", {
-                    transactionId: transaction.id,
-                    status: transaction_status,
-                    issuer
-                });
             }
         }
     } catch (error) {
+        console.log(error);
         logger.error("Error checking pending transactions:", error);
     }
 }
