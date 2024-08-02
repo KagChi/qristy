@@ -12,7 +12,7 @@ import toast from "solid-toast";
 
 export default function Page(): JSX.Element {
     const [paymentDialog, setPaymentDialog] = createSignal(false);
-    const [transactions, { mutate }] = createResource(1, fetchTransactions);
+    const [transactions, { mutate, refetch: refetchTransactions }] = createResource(1, fetchTransactions);
     const [moreButtonState, setMoreButtonState] = createSignal(true);
 
     const [amount, setAmount] = createSignal(0);
@@ -36,8 +36,7 @@ export default function Page(): JSX.Element {
             setSubmitState(false);
             setTransactionId(trx.invoiceId);
 
-            const trxs = await fetchTransactions(1);
-            mutate(() => trxs);
+            await refetchTransactions();
         } catch (e) {
             console.log(e);
             toast.error("Gagal untuk membuat transaksi", { icon: "❌" });
@@ -86,6 +85,7 @@ export default function Page(): JSX.Element {
                     const newTrx = await refetchTransaction();
                     if (newTrx !== undefined && newTrx !== null && newTrx.paymentGatewayTransactionStatus === "settlement") {
                         toast("Transaksi sukses!", { icon: "✅" });
+                        await refetchTransactions();
                         for (let i = 0; i < 5; i++) {
                             const audioTag = document.createElement("audio");
                             audioTag.src = "public/cash.mp3";
