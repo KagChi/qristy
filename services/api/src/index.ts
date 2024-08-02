@@ -46,7 +46,7 @@ app.post("/create", async c => {
     const tax = withTax ? 0.01 : 0;
 
     const { token } = await axios.post<any, { data: { token: string } }>(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v1/transactions`, {
-        json: {
+        data: {
             transaction_details: {
                 order_id: invoiceId,
                 gross_amount: Math.ceil(amount + (amount * tax))
@@ -62,7 +62,7 @@ app.post("/create", async c => {
 
     // Somehow this is not available on sandbox ?! 🤷‍♀️
     const { status_code, qris_expiration_raw, qris_url, transaction_id } = await axios.post<any, { data: { qris_expiration_raw: string; qris_url: string; transaction_id: string; status_code: string } }>(`https://app${config.production ? "" : ".sandbox"}.midtrans.com/snap/v2/transactions/${token}/charge`, {
-        json: {
+        data: {
             payment_params: {
                 acquirer: [
                     "gopay"
