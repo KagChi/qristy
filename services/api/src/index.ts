@@ -91,7 +91,22 @@ app.post("/create", async c => {
                 paymentGatewayTransactionQrUrl: qris_url
             });
 
-        return c.json({ qrisExpiration: qris_expiration_raw, qrisUrl: qris_url, transactionId: transaction_id, invoiceId });
+        const transaction = await db.select({
+            createdAt: schema.transaction.createdAt,
+            updatedAt: schema.transaction.updatedAt,
+            amount: schema.transaction.amount,
+            tax: schema.transaction.tax,
+            invoiceId: schema.transaction.invoiceId,
+            paymentGatewayTransactionQrUrl: schema.transaction.paymentGatewayTransactionQrUrl,
+            paymentGatewayTransactionId: schema.transaction.paymentGatewayTransactionId,
+            paymentGatewayTransactionStatus: schema.transaction.paymentGatewayTransactionStatus,
+            paymentGatewayTransactionExpireAt: schema.transaction.paymentGatewayTransactionExpireAt
+        })
+            .from(schema.transaction)
+            .where(eq(schema.transaction.invoiceId, invoiceId))
+            .limit(1);
+
+        return c.json(transaction[0]);
     } catch (error) {
         logger.error(error, "An error ocurred while dispatching requests");
         return c.json({ message: "Transaction failed" }, 500);

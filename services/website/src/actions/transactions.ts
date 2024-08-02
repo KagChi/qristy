@@ -25,7 +25,20 @@ export const fetchTransactions = async (page: number): Promise<Transaction[]> =>
     }
 };
 
-export const createTransaction = async (amount: number, withTax: boolean): Promise<void> => {
+export const fetchTransaction = async (transactionId: string): Promise<Transaction> => {
+    try {
+        const response: Response = await fetch(`http://localhost:3001/transaction/${transactionId}`);
+        if (!response.ok) {
+            throw new Error("Failed to fetch transactions");
+        }
+        return await (response.json() as unknown as Promise<Transaction>);
+    } catch (error) {
+        console.error("Error fetching transactions:", error);
+        throw error;
+    }
+};
+
+export const createTransaction = async (amount: number, withTax: boolean): Promise<Transaction> => {
     try {
         const response: Response = await fetch("http://localhost:3001/create", {
             method: "POST",
@@ -37,6 +50,8 @@ export const createTransaction = async (amount: number, withTax: boolean): Promi
         if (!response.ok) {
             throw new Error("Failed to create transaction");
         }
+
+        return await (response.json() as unknown as Promise<Transaction>);
     } catch (error) {
         console.error("Error creating transaction:", error);
         throw error;
